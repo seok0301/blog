@@ -1,6 +1,6 @@
 export const SITE = {
   name: 'Blog',
-  url: 'https://example.com', // 배포 후 실제 주소로
+  url: 'https://blog-eosin-theta-40.vercel.app',
 };
 
 // 댓글 + ❤️ 반응 (GitHub Discussions 기반)
