@@ -45,7 +45,11 @@ const current = (id: string) =>
     </script>
   </head>
   <body>
-    <aside class="sidebar">
+    <button class="peek" id="peek" aria-label="글 목록" aria-expanded="false"
+      aria-controls="sidebar">&#8250;</button>
+    <div class="scrim" id="scrim"></div>
+
+    <aside class="sidebar" id="sidebar">
       <div class="brand">
         <a href="/">{SITE.name}</a>
         <button class="toggle" id="theme-toggle" aria-label="테마 변경"></button>
@@ -82,6 +86,26 @@ const current = (id: string) =>
     <main class="main">
       <slot />
     </main>
+
+    <script is:inline>
+      // 좁은 화면에서 좌측 화살표로 목록 열기 / 빈 곳 눌러 닫기
+      const peek = document.getElementById('peek');
+      const scrim = document.getElementById('scrim');
+      const setOpen = (v) => {
+        document.body.classList.toggle('open', v);
+        peek.setAttribute('aria-expanded', String(v));
+      };
+      peek.addEventListener('click', () =>
+        setOpen(!document.body.classList.contains('open'))
+      );
+      scrim.addEventListener('click', () => setOpen(false));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') setOpen(false);
+      });
+      addEventListener('resize', () => {
+        if (innerWidth >= 1120) setOpen(false);
+      });
+    </script>
 
     <script is:inline>
       const root = document.documentElement;
