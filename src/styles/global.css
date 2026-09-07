@@ -48,7 +48,7 @@ a { color: inherit; text-decoration: none; }
 .brand {
   display: flex;
   align-items: center;
-  gap: 9px;
+  justify-content: space-between; /* Blog 는 좌측, 아이콘은 목록 우측 끝 */
   margin-bottom: 26px;
 }
 
