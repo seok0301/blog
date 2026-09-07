@@ -1,0 +1,83 @@
+---
+import { getCollection } from 'astro:content';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+}
+
+const { title } = Astro.props;
+const siteName = 'Blog';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+
+const fmt = (d: Date) =>
+  `${d.getFullYear()}. ${String(d.getMonth() + 1).padStart(2, '0')}. ${String(
+    d.getDate()
+  ).padStart(2, '0')}`;
+
+const path = Astro.url.pathname.replace(/\/$/, '');
+---
+
+<!doctype html>
+<html lang="ko" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title ? `${title} — ${siteName}` : siteName}</title>
+    <link rel="icon" href="/favicon.svg" />
+    <script is:inline>
+      const saved = localStorage.getItem('theme');
+      const dark = saved
+        ? saved === 'dark'
+        : matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+    </script>
+  </head>
+  <body>
+    <div class="wrap">
+      <aside class="sidebar">
+        <div class="brand">
+          <a href="/">{siteName}</a>
+          <button class="toggle" id="theme-toggle" aria-label="테마 변경"></button>
+        </div>
+        <ul class="list">
+          {
+            posts.map((p) => (
+              <li>
+                <a
+                  href={`/posts/${p.id}`}
+                  aria-current={path === `/posts/${p.id}` ? 'page' : undefined}
+                >
+                  <span class="t">{p.data.title}</span>
+                  <span class="m">
+                    {p.data.category ? `${p.data.category} · ` : ''}
+                    {fmt(p.data.date)}
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </aside>
+      <main class="main">
+        <div class="content">
+          <slot />
+        </div>
+      </main>
+    </div>
+    <script is:inline>
+      const btn = document.getElementById('theme-toggle');
+      const root = document.documentElement;
+      const paint = () => (btn.textContent = root.dataset.theme === 'dark' ? '○' : '●');
+      paint();
+      btn.addEventListener('click', () => {
+        root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('theme', root.dataset.theme);
+        paint();
+      });
+    </script>
+  </body>
+</html>
