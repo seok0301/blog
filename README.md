@@ -30,25 +30,13 @@ npm run preview  # 빌드 결과 확인
 
 ## 댓글 + 하트 (Giscus)
 
-`src/config.ts` 의 `GISCUS` 가 비어 있으면 렌더되지 않는다. 켜는 순서:
+`src/config.ts` 에 이 repo(`seok0301/blog`) 의 값이 이미 채워져 있고, Discussions 도 켜져 있다.
+남은 단계는 **giscus 앱 설치** 하나다 (브라우저에서만 가능):
 
-1. GitHub repo → **Settings → General → Features → Discussions** 체크
-2. repo 의 **Discussions → New category** 로 `Comments` 카테고리 생성 (Discussion format 권장)
-3. [github.com/apps/giscus](https://github.com/apps/giscus) 설치 (해당 repo 에만 허용해도 됨)
-4. [giscus.app](https://giscus.app) 에서 repo 와 카테고리를 고르면 `repo-id` / `category-id` 가 나온다
-5. 그 값을 `src/config.ts` 에 채운다
+[github.com/apps/giscus](https://github.com/apps/giscus) → Install → `seok0301/blog` 만 선택
 
-```ts
-export const GISCUS = {
-  repo: 'seok/blog',
-  repoId: 'R_kgDO...',
-  category: 'Comments',
-  categoryId: 'DIC_kwDO...',
-};
-```
-
-댓글과 ❤️ 반응이 함께 켜진다. 저장소는 GitHub Discussions 라서 DB·서버·요금이 없다.
-댓글 작성에는 방문자의 GitHub 로그인이 필요하고, 읽기는 누구나 된다.
+설치하면 댓글과 ❤️ 반응이 바로 동작한다. 저장소는 GitHub Discussions 의 `Announcements`
+카테고리라서 DB·서버·요금이 없다. 댓글 작성에는 방문자의 GitHub 로그인이 필요하고, 읽기는 누구나 된다.
 
 ## 배포
 
