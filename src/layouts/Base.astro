@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { SITE } from '../config';
 import '../styles/global.css';
 
 interface Props {
@@ -7,18 +8,25 @@ interface Props {
 }
 
 const { title } = Astro.props;
-const siteName = 'Blog';
 
+// 최신 글이 항상 맨 위
 const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime()
 );
 
-const fmt = (d: Date) =>
-  `${d.getFullYear()}. ${String(d.getMonth() + 1).padStart(2, '0')}. ${String(
-    d.getDate()
-  ).padStart(2, '0')}`;
+const years = [...new Set(posts.map((p) => p.data.date.getFullYear()))].sort(
+  (a, b) => b - a
+);
 
-const path = Astro.url.pathname.replace(/\/$/, '');
+const md = (d: Date) =>
+  `${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const latestId = posts[0]?.id;
+
+// 홈에서는 최신 글이 목록에서도 선택된 것으로 표시
+const current = (id: string) =>
+  path === `/posts/${id}` || (path === '/' && id === latestId);
 ---
 
 <!doctype html>
@@ -26,7 +34,7 @@ const path = Astro.url.pathname.replace(/\/$/, '');
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title ? `${title} — ${siteName}` : siteName}</title>
+    <title>{title ? `${title} — ${SITE.name}` : SITE.name}</title>
     <link rel="icon" href="/favicon.svg" />
     <script is:inline>
       const saved = localStorage.getItem('theme');
@@ -37,47 +45,65 @@ const path = Astro.url.pathname.replace(/\/$/, '');
     </script>
   </head>
   <body>
-    <div class="wrap">
-      <aside class="sidebar">
-        <div class="brand">
-          <a href="/">{siteName}</a>
-          <button class="toggle" id="theme-toggle" aria-label="테마 변경"></button>
-        </div>
-        <ul class="list">
-          {
-            posts.map((p) => (
-              <li>
-                <a
-                  href={`/posts/${p.id}`}
-                  aria-current={path === `/posts/${p.id}` ? 'page' : undefined}
-                >
-                  <span class="t">{p.data.title}</span>
-                  <span class="m">
-                    {p.data.category ? `${p.data.category} · ` : ''}
-                    {fmt(p.data.date)}
-                  </span>
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </aside>
-      <main class="main">
-        <div class="content">
-          <slot />
-        </div>
-      </main>
+    <aside class="sidebar">
+      <div class="brand">
+        <a href="/">{SITE.name}</a>
+        <button class="toggle" id="theme-toggle" aria-label="테마 변경"></button>
+      </div>
+      {
+        years.map((y) => (
+          <>
+            <div class="year">{y}</div>
+            <ul class="list">
+              {posts
+                .filter((p) => p.data.date.getFullYear() === y)
+                .map((p) => (
+                  <li>
+                    <a
+                      href={`/posts/${p.id}`}
+                      aria-current={current(p.id) ? 'page' : undefined}
+                    >
+                      <span class="d">{md(p.data.date)}</span>
+                      <span class="t">{p.data.title}</span>
+                    </a>
+                  </li>
+                ))}
+            </ul>
+          </>
+        ))
+      }
+    </aside>
+
+    <div class="back">
+      <a href="/">{SITE.name}</a>
+      <button class="toggle" id="theme-toggle-m" aria-label="테마 변경"></button>
     </div>
+
+    <main class="main">
+      <slot />
+    </main>
+
     <script is:inline>
-      const btn = document.getElementById('theme-toggle');
       const root = document.documentElement;
-      const paint = () => (btn.textContent = root.dataset.theme === 'dark' ? '○' : '●');
+      const btns = [
+        document.getElementById('theme-toggle'),
+        document.getElementById('theme-toggle-m'),
+      ].filter(Boolean);
+      const paint = () => {
+        const mark = root.dataset.theme === 'dark' ? '○' : '●';
+        btns.forEach((b) => (b.textContent = mark));
+      };
       paint();
-      btn.addEventListener('click', () => {
-        root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-        localStorage.setItem('theme', root.dataset.theme);
-        paint();
-      });
+      btns.forEach((b) =>
+        b.addEventListener('click', () => {
+          root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+          localStorage.setItem('theme', root.dataset.theme);
+          paint();
+          document.dispatchEvent(
+            new CustomEvent('themechange', { detail: root.dataset.theme })
+          );
+        })
+      );
     </script>
   </body>
 </html>

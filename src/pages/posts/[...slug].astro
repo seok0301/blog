@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import Comments from '../../components/Comments.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
@@ -18,11 +19,9 @@ const fmt = (d: Date) =>
 
 <Base title={post.data.title}>
   <h1 class="title">{post.data.title}</h1>
-  <div class="meta">
-    {post.data.category ? `${post.data.category} · ` : ''}
-    {fmt(post.data.date)}
-  </div>
+  <div class="meta">{fmt(post.data.date)}</div>
   <div class="prose">
     <Content />
   </div>
+  <Comments />
 </Base>

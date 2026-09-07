@@ -1,26 +1,22 @@
 :root {
-  --bg: #ffffff;
-  --fg: #1a1a1a;
-  --muted: #999999;
-  --line: #e8e8e8;
-  --hover: #f6f6f6;
-  --accent: #1a1a1a;
+  --bg: #faf9f4;
+  --fg: #26251f;
+  --muted: #a29f95;
+  --line: #eae7dc;
+  --sidebar: 200px;
+  --gap: 40px;
+  --col: 600px;
 }
 
 :root[data-theme='dark'] {
-  --bg: #101010;
-  --fg: #e6e6e6;
-  --muted: #777777;
-  --line: #262626;
-  --hover: #1a1a1a;
-  --accent: #ffffff;
+  --bg: #1c1c1b;
+  --fg: #d9d8d3;
+  --muted: #706f6a;
+  --line: #2e2e2c;
 }
 
 * { box-sizing: border-box; }
-
-html {
-  -webkit-text-size-adjust: 100%;
-}
+html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
@@ -29,39 +25,34 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo',
     'Segoe UI', Roboto, sans-serif;
   font-size: 15px;
-  line-height: 1.7;
+  line-height: 1.75;
   -webkit-font-smoothing: antialiased;
 }
 
 a { color: inherit; text-decoration: none; }
 
-/* ---------- layout ---------- */
-
-.wrap {
-  display: flex;
-  min-height: 100vh;
-}
+/* ---------- 사이드바 (넓은 화면: 좌측 상단에 떠 있음) ---------- */
 
 .sidebar {
-  width: 270px;
-  flex: 0 0 270px;
-  border-right: 1px solid var(--line);
-  padding: 34px 22px;
-  position: sticky;
-  top: 0;
-  height: 100vh;
+  position: fixed;
+  top: 46px;
+  left: 40px;
+  width: var(--sidebar);
+  max-height: calc(100vh - 92px);
   overflow-y: auto;
+  scrollbar-width: none;
 }
+.sidebar::-webkit-scrollbar { display: none; }
 
 .brand {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 28px;
+  gap: 8px;
+  margin-bottom: 26px;
 }
 
 .brand a {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -72,123 +63,128 @@ a { color: inherit; text-decoration: none; }
   color: var(--muted);
   cursor: pointer;
   font: inherit;
-  font-size: 12px;
-  padding: 2px 4px;
+  font-size: 11px;
+  padding: 0;
   line-height: 1;
 }
 .toggle:hover { color: var(--fg); }
 
+.year {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  margin: 20px 0 5px;
+}
+.year:first-of-type { margin-top: 0; }
+
 .list { list-style: none; margin: 0; padding: 0; }
 
-.list li { margin-bottom: 2px; }
-
 .list a {
-  display: block;
-  padding: 7px 8px;
-  margin: 0 -8px;
-  border-radius: 5px;
+  display: flex;
+  gap: 9px;
+  padding: 3px 0;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 13.5px;
 }
-.list a:hover { background: var(--hover); }
-
-.list a[aria-current='page'] { background: var(--hover); }
-
-.list .t {
-  display: block;
-  line-height: 1.45;
-}
+.list a:hover { color: var(--fg); }
+.list a[aria-current='page'] { color: var(--fg); }
 .list a[aria-current='page'] .t { font-weight: 700; }
 
-.list .m {
-  display: block;
-  font-size: 12px;
+.list .d {
+  flex: 0 0 34px;
+  font-variant-numeric: tabular-nums;
   color: var(--muted);
-  margin-top: 1px;
 }
+
+/* ---------- 본문 (화면 정중앙) ---------- */
 
 .main {
-  flex: 1;
-  min-width: 0;
-  padding: 34px 40px 120px;
+  max-width: var(--col);
+  margin: 0 auto;
+  padding: 46px 20px 140px;
 }
 
-.content { max-width: 660px; }
+.back { display: none; }
 
-/* ---------- post ---------- */
+/* ---------- 글 ---------- */
 
 .title {
-  font-size: 22px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: -0.01em;
-  margin: 0 0 4px;
-  line-height: 1.4;
+  margin: 0;
+  line-height: 1.5;
 }
 
 .meta {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--muted);
-  margin-bottom: 34px;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 40px;
 }
 
-.prose { font-size: 15px; }
 .prose > *:first-child { margin-top: 0; }
-.prose p { margin: 0 0 1.1em; }
+.prose p { margin: 0 0 1.15em; }
 .prose strong { font-weight: 700; }
 .prose em { font-style: normal; font-weight: 700; }
 .prose h1, .prose h2, .prose h3, .prose h4 {
   font-size: 15px;
   font-weight: 700;
-  margin: 2em 0 0.6em;
+  margin: 2.2em 0 0.6em;
 }
-.prose a { text-decoration: underline; text-underline-offset: 2px; }
-.prose ul, .prose ol { margin: 0 0 1.1em; padding-left: 1.3em; }
-.prose li { margin-bottom: 0.2em; }
+.prose a { text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--muted); }
+.prose ul, .prose ol { margin: 0 0 1.15em; padding-left: 1.3em; }
+.prose li { margin-bottom: 0.15em; }
 .prose blockquote {
-  margin: 0 0 1.1em;
-  padding-left: 14px;
-  border-left: 2px solid var(--line);
+  margin: 0 0 1.15em;
+  padding-left: 15px;
+  border-left: 1px solid var(--line);
   color: var(--muted);
 }
-.prose hr { border: none; border-top: 1px solid var(--line); margin: 2.4em 0; }
+.prose hr { border: none; border-top: 1px solid var(--line); margin: 2.6em 0; }
 .prose img { max-width: 100%; height: auto; }
 .prose code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.88em;
-  background: var(--hover);
+  font-size: 0.87em;
+  background: var(--line);
   padding: 1px 5px;
   border-radius: 3px;
 }
 .prose pre {
-  background: var(--hover) !important;
-  padding: 14px 16px;
-  border-radius: 6px;
+  background: var(--line) !important;
+  padding: 15px 17px;
+  border-radius: 5px;
   overflow-x: auto;
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 .prose pre code { background: none; padding: 0; font-size: inherit; }
 :root[data-theme='dark'] .prose pre code span { color: var(--fg) !important; }
-.prose table { border-collapse: collapse; width: 100%; margin: 0 0 1.1em; }
+.prose table { border-collapse: collapse; width: 100%; margin: 0 0 1.15em; }
 .prose th, .prose td {
   border-bottom: 1px solid var(--line);
   padding: 7px 10px;
   text-align: left;
 }
 
-/* ---------- index ---------- */
+.comments { margin-top: 90px; }
 
 .empty { color: var(--muted); }
 
-/* ---------- mobile ---------- */
+/* ---------- 좁은 화면: 목록을 위로 내려 문서 흐름에 둔다 ---------- */
 
-@media (max-width: 720px) {
-  .wrap { display: block; }
-  .sidebar {
-    width: auto;
-    height: auto;
-    position: static;
-    border-right: none;
-    border-bottom: 1px solid var(--line);
-    padding: 22px 20px;
+@media (max-width: 1119px) {
+  .sidebar { display: none; }
+  .back {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    max-width: var(--col);
+    margin: 0 auto;
+    padding: 26px 20px 0;
+    font-size: 14px;
   }
-  .main { padding: 26px 20px 80px; }
+  .back a { font-weight: 700; }
+  .main { padding-top: 30px; }
 }
