@@ -1,0 +1,172 @@
+---
+interface Props {
+  slug: string;
+}
+const { slug } = Astro.props;
+---
+
+<section class="reactions" data-slug={slug}>
+  <button class="heart" type="button" aria-pressed="false" disabled>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M12 20.5S3.5 15 3.5 9.4A4.9 4.9 0 0 1 12 6.2a4.9 4.9 0 0 1 8.5 3.2c0 5.6-8.5 11.1-8.5 11.1Z"
+      />
+    </svg>
+    <span class="n">0</span>
+  </button>
+
+  <div class="cbox">
+    <ol class="clist"></ol>
+
+    <form class="cform" autocomplete="off">
+      <div class="crow">
+        <input class="cname" name="name" placeholder="이름" maxlength="24" required />
+        <input
+          class="cpw"
+          name="password"
+          type="password"
+          placeholder="비밀번호"
+          minlength="4"
+          maxlength="60"
+          required
+        />
+      </div>
+      <textarea
+        class="cbody"
+        name="body"
+        rows="3"
+        placeholder="댓글"
+        maxlength="2000"
+        required></textarea>
+      <input class="ctrap" name="url" tabindex="-1" aria-hidden="true" />
+      <div class="cfoot">
+        <span class="cmsg"></span>
+        <button type="submit">등록</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('.reactions')!;
+  const slug = root.dataset.slug!;
+  const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+
+  const heart = q<HTMLButtonElement>('.heart');
+  const heartN = q<HTMLElement>('.n');
+  const list = q<HTMLOListElement>('.clist');
+  const form = q<HTMLFormElement>('.cform');
+  const msg = q<HTMLElement>('.cmsg');
+  const nameEl = q<HTMLInputElement>('.cname');
+
+  const say = (t: string, bad = false) => {
+    msg.textContent = t;
+    msg.classList.toggle('bad', bad);
+    if (t) setTimeout(() => (msg.textContent = ''), 4000);
+  };
+
+  const when = (ms: number) => {
+    const d = new Date(ms);
+    const p = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}. ${p(d.getMonth() + 1)}. ${p(d.getDate())} ${p(
+      d.getHours()
+    )}:${p(d.getMinutes())}`;
+  };
+
+  /* ---------- 하트 ---------- */
+
+  const paintHeart = (count: number, mine: boolean) => {
+    heartN.textContent = String(count);
+    heart.setAttribute('aria-pressed', String(mine));
+    heart.classList.toggle('on', mine);
+    heart.disabled = false;
+  };
+
+  fetch(`/api/hearts?slug=${encodeURIComponent(slug)}`)
+    .then((r) => r.json())
+    .then((d) => !d.off && paintHeart(d.count, d.mine))
+    .catch(() => {});
+
+  heart.addEventListener('click', async () => {
+    heart.disabled = true;
+    try {
+      const r = await fetch(`/api/hearts?slug=${encodeURIComponent(slug)}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+      });
+      const d = await r.json();
+      if (r.ok) paintHeart(d.count, d.mine);
+      else say(d.error || '실패했습니다.', true);
+    } catch {
+      say('연결에 실패했습니다.', true);
+    } finally {
+      heart.disabled = false;
+    }
+  });
+
+  /* ---------- 댓글 ---------- */
+
+  type C = { id: string; name: string; body: string; at: number };
+
+  const row = (c: C) => {
+    const li = document.createElement('li');
+    li.className = 'citem';
+    li.innerHTML = `
+      <div class="chead">
+        <b></b><time></time>
+        <button type="button" class="cdel" title="삭제">삭제</button>
+      </div>
+      <p class="ctext"></p>`;
+    li.querySelector('b')!.textContent = c.name;
+    li.querySelector('time')!.textContent = when(c.at);
+    li.querySelector('.ctext')!.textContent = c.body;
+    li.querySelector('.cdel')!.addEventListener('click', async () => {
+      const pw = prompt('비밀번호를 입력하세요.');
+      if (!pw) return;
+      const r = await fetch(
+        `/api/comments?slug=${encodeURIComponent(slug)}&id=${c.id}`,
+        {
+          method: 'DELETE',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ password: pw }),
+        }
+      );
+      const d = await r.json();
+      if (r.ok) li.remove();
+      else say(d.error || '삭제하지 못했습니다.', true);
+    });
+    return li;
+  };
+
+  fetch(`/api/comments?slug=${encodeURIComponent(slug)}`)
+    .then((r) => r.json())
+    .then((d) => (d.comments || []).forEach((c: C) => list.appendChild(row(c))))
+    .catch(() => {});
+
+  const saved = localStorage.getItem('cname');
+  if (saved) nameEl.value = saved;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const btn = form.querySelector('button[type=submit]') as HTMLButtonElement;
+    btn.disabled = true;
+    try {
+      const r = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(fd)),
+      });
+      const d = await r.json();
+      if (!r.ok) return say(d.error || '등록하지 못했습니다.', true);
+      list.appendChild(row(d.comment));
+      localStorage.setItem('cname', String(fd.get('name') || ''));
+      (form.querySelector('.cbody') as HTMLTextAreaElement).value = '';
+      (form.querySelector('.cpw') as HTMLInputElement).value = '';
+    } catch {
+      say('연결에 실패했습니다.', true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>

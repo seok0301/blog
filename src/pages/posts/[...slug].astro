@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import Comments from '../../components/Comments.astro';
+import Reactions from '../../components/Reactions.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
@@ -23,5 +23,5 @@ const fmt = (d: Date) =>
   <div class="prose">
     <Content />
   </div>
-  <Comments />
+  <Reactions slug={post.id} />
 </Base>

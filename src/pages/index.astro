@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import Comments from '../components/Comments.astro';
+import Reactions from '../components/Reactions.astro';
 
 // 처음 들어오면 가장 최신 글이 보인다
 const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
@@ -27,7 +27,7 @@ const fmt = (d: Date) =>
         <div class="prose">
           <Content />
         </div>
-        <Comments />
+        <Reactions slug={latest.id} />
       </>
     ) : (
       <p class="empty">아직 글이 없습니다.</p>
