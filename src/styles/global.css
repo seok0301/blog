@@ -112,8 +112,6 @@ a { color: inherit; text-decoration: none; }
   padding: 46px 20px 140px;
 }
 
-.back { display: none; }
-
 /* ---------- 글 ---------- */
 
 .title {
@@ -243,18 +241,7 @@ body.open .peek .i-close { display: block; }
   body.open .scrim { display: block; opacity: 1; }
   body.open { overflow: hidden; }
 
-  .back {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    max-width: var(--col);
-    margin: 0 auto;
-    padding: 26px 20px 0;
-    font-size: 15px;
-  }
-  .back a { font-weight: 700; }
-
-  .main { padding-top: 30px; }
+  .main { padding: 40px 20px 120px; }
 }
 
 @media (max-width: 1119px) and (prefers-reduced-motion: reduce) {

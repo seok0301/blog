@@ -89,11 +89,6 @@ const current = (id: string) =>
       }
     </aside>
 
-    <div class="back">
-      <a href="/">{SITE.name}</a>
-      <ThemeToggle id="theme-toggle-m" />
-    </div>
-
     <main class="main">
       <slot />
     </main>
@@ -120,19 +115,14 @@ const current = (id: string) =>
 
     <script is:inline>
       const root = document.documentElement;
-      const btns = [
-        document.getElementById('theme-toggle'),
-        document.getElementById('theme-toggle-m'),
-      ].filter(Boolean);
-      btns.forEach((b) =>
-        b.addEventListener('click', () => {
-          root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-          localStorage.setItem('theme', root.dataset.theme);
-          document.dispatchEvent(
-            new CustomEvent('themechange', { detail: root.dataset.theme })
-          );
-        })
-      );
+      const btn = document.getElementById('theme-toggle');
+      btn.addEventListener('click', () => {
+        root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('theme', root.dataset.theme);
+        document.dispatchEvent(
+          new CustomEvent('themechange', { detail: root.dataset.theme })
+        );
+      });
     </script>
   </body>
 </html>
