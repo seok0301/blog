@@ -194,27 +194,14 @@ a { color: inherit; text-decoration: none; }
   border-left: none;
   border-radius: 0 9px 9px 0;
   color: var(--muted);
-  padding: 13px 8px 15px;
+  padding: 14px 9px;
   transition: color 0.15s, transform 0.25s ease, border-color 0.15s;
 }
 .peek:hover { color: var(--fg); border-color: var(--muted); }
 
-.peek-stack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 7px;
-}
 .peek svg { width: 15px; height: 15px; display: block; }
-.peek-label {
-  writing-mode: vertical-rl;
-  font-size: 10.5px;
-  letter-spacing: 0.14em;
-  line-height: 1;
-}
 .peek .i-close { display: none; }
-body.open .peek .i-list,
-body.open .peek .peek-label { display: none; }
+body.open .peek .i-list { display: none; }
 body.open .peek .i-close { display: block; }
 
 .scrim {
