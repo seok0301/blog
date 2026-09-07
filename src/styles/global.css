@@ -359,3 +359,16 @@ body.open .peek .i-close { display: block; }
 @media (max-width: 1119px) and (prefers-reduced-motion: reduce) {
   .sidebar, .peek, .scrim { transition: none; }
 }
+
+/* ---------- 404 ---------- */
+
+.nf-desc { margin: 0 0 24px; }
+
+.nf-home {
+  display: inline-block;
+  background: var(--fg);
+  color: var(--bg);
+  border-radius: 5px;
+  padding: 8px 16px;
+  font-size: 13.5px;
+}
