@@ -15,6 +15,23 @@ date: 2026-09-07
 본문. 강조는 **볼드** 만.
 ```
 
+유튜브는 아래처럼 넣으면 본문 안에서 바로 재생된다. `VIDEO_ID`는 링크의 `v=` 뒤 또는 `youtu.be/` 뒤에 있는 값이다.
+
+```html
+<figure class="embed">
+  <div class="embed-frame">
+    <iframe src="https://www.youtube-nocookie.com/embed/VIDEO_ID" title="영상 설명" loading="lazy" allowfullscreen></iframe>
+  </div>
+  <figcaption>영상 설명</figcaption>
+</figure>
+```
+
+외부 글은 제목을 넣은 링크 카드로 남긴다.
+
+```html
+<p class="resource-link"><a href="https://example.com">읽을거리 제목 <span aria-hidden="true">↗</span></a></p>
+```
+
 - `draft: true` 를 넣으면 공개되지 않음
 - 최신 글이 좌측 목록 맨 위에 오고, 홈(`/`)에 열리면 그 글이 바로 보인다
 
